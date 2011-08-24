@@ -1,0 +1,12 @@
+﻿<Window x:Class="MarkRendle.CodeProjector.ProjectorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="ProjectorWindow" Height="300" Width="300">
+    <Grid x:Name="TheGrid">
+        <CheckBox x:Name="FullScreenCheckbox"
+                  HorizontalAlignment="Right"
+                  VerticalAlignment="Bottom"
+                  Opacity=".5"
+                  Checked="FullScreenCheckbox_Checked">Full Screen</CheckBox>
+    </Grid>
+</Window>
