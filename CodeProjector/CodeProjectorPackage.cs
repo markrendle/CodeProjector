@@ -35,7 +35,9 @@ namespace MarkRendle.CodeProjector
     [Guid(GuidList.guidCodeProjectorPkgString)]
     public sealed class CodeProjectorPackage : Package
     {
-        private Window _projectorWindow;
+        private ProjectorWindow _projectorWindow;
+
+        private FrameworkElement _mainDocWellGrid;
 
         /// <summary>
         /// Default constructor of the package.
@@ -83,14 +85,70 @@ namespace MarkRendle.CodeProjector
         /// </summary>
         private void MenuItemCallback(object sender, EventArgs e)
         {
-            var mainDocWellGrid = GetMainDocWellGrid();
-            var brush = new VisualBrush(mainDocWellGrid);
+            if (this._mainDocWellGrid == null)
+            {
+                this._mainDocWellGrid = GetMainDocWellGrid();
+
+                this._mainDocWellGrid.MouseMove += (so, ea) =>
+                {
+                    if (_projectorWindow == null)
+                    {
+                        return;
+                    }
+
+                    var point = ea.GetPosition(this._mainDocWellGrid);
+
+                    var xScale = _projectorWindow.TheGrid.ActualHeight / this._mainDocWellGrid.ActualHeight;
+                    var yScale = _projectorWindow.TheGrid.ActualWidth / this._mainDocWellGrid.ActualWidth;
+
+                    _projectorWindow.CursorImage.Margin = new Thickness(Math.Max(point.X * xScale, 0), Math.Max(point.Y * yScale, 0), 0, 0);
+                };
+
+                // Mouse button events would work better if they were
+                // preview events, or "handled events too", but if I do that
+                // then code windows stop rendering for some reason..
+
+                this._mainDocWellGrid.MouseDown += (so, ea) =>
+                {
+                    if (_projectorWindow == null)
+                    {
+                        return;
+                    }
+
+                    _projectorWindow.CursorImage.RenderTransform = new ScaleTransform(1.5, 1.5, 0.5, 0.5);
+                };
+
+                this._mainDocWellGrid.MouseUp += (so, ea) =>
+                {
+                    if (_projectorWindow == null)
+                    {
+                        return;
+                    }
+
+                    _projectorWindow.CursorImage.RenderTransform = null;
+                };
+
+                this._mainDocWellGrid.SizeChanged += (se, ea) =>
+                {
+                    if (_projectorWindow == null)
+                    {
+                        return;
+                    }
+
+                    _projectorWindow.TheGrid.Width = ea.NewSize.Width;
+                    _projectorWindow.TheGrid.Height = ea.NewSize.Height;
+                };
+            }
+
+            var brush = new VisualBrush(this._mainDocWellGrid);
             _projectorWindow = _projectorWindow ?? new ProjectorWindow(brush);
+            _projectorWindow.TheGrid.Width = this._mainDocWellGrid.ActualWidth;
+            _projectorWindow.TheGrid.Height = this._mainDocWellGrid.ActualHeight;
             _projectorWindow.Show();
             _projectorWindow.Closed += (o, x) => _projectorWindow = null;
         }
 
-        private UIElement GetMainDocWellGrid()
+        private FrameworkElement GetMainDocWellGrid()
         {
             FrameworkElement mainDockTarget;
             TryFindChild(Application.Current.MainWindow, "MainDockTarget", out mainDockTarget);
