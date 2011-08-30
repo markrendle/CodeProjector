@@ -2,11 +2,23 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="ProjectorWindow" Height="300" Width="300">
-    <Grid x:Name="TheGrid">
-        <CheckBox x:Name="FullScreenCheckbox"
-                  HorizontalAlignment="Right"
-                  VerticalAlignment="Bottom"
-                  Opacity=".5"
-                  Checked="FullScreenCheckbox_Checked">Full Screen</CheckBox>
+  <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+  </Window.Resources>
+    
+  <Grid>
+        <Viewbox Stretch="Uniform">
+            <Grid x:Name="TheGrid" Width="200" Height="100" Background="Blue">
+
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Right" VerticalAlignment="Bottom" Opacity=".5">
+                    <CheckBox x:Name="FullScreenCheckbox" Checked="FullScreenCheckbox_Checked">Full Screen</CheckBox>
+                    <CheckBox x:Name="CursorCheckBox" IsChecked="True">Show Cursor</CheckBox>
+                </StackPanel>
+
+                <Canvas x:Name="CursorImage" Visibility="{Binding ElementName=CursorCheckBox, Path=IsChecked, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <Image Width="30" Height="36" Margin="-14,-15,0,0" Source="Resources/cursor.png" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                </Canvas>
+            </Grid>
+        </Viewbox>
     </Grid>
 </Window>
