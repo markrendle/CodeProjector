@@ -155,6 +155,7 @@
     <None Include="Resources\Images_32bit.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\cursor.png" />
     <Content Include="Resources\Package.ico" />
   </ItemGroup>
   <ItemGroup>
